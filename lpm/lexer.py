@@ -52,6 +52,10 @@ class Lexer:
                 token = self._make_two_character_token(TokenType.NOT_EQ)
             else:
                 token = Token(TokenType.DIFFERENT, self._character)
+        elif match(r'^"$', self._character):
+            literal = self._read_string()
+
+            return Token(TokenType.STRING, literal)
 
         if token is None:
             token = Token(TokenType.ILLEGAL, self._character)
@@ -96,6 +100,21 @@ class Lexer:
             self._read_character()
 
         return self._source[initial_position:self._position]
+
+    def _read_string(self) -> str:
+        self._read_character()
+
+        initial_position = self._position
+
+        while self._character != '"' \
+                and self._read_position <= len(self._source):
+            self._read_character()
+
+        string = self._source[initial_position:self._position]
+
+        self._read_character()
+
+        return string
 
     def _peek_character(self) -> str:
         if self._read_position >= len(self._source):

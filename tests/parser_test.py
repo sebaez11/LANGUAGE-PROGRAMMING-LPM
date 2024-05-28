@@ -17,6 +17,7 @@ from lpm.ast import (
     If,
     Function,
     Call,
+    StringLiteral,
 )
 
 from typing import (
@@ -468,3 +469,16 @@ class ParserTest(TestCase):
         integer = cast(Integer, expression)
         self.assertEquals(integer.value, expected_value)
         self.assertEquals(integer.token.literal, str(expected_value))
+
+    def test_string_literal_expression(self) -> None:
+        source: str = '"hello world!"'
+        lexer: Lexer = Lexer(source)
+        parser: Parser = Parser(lexer)
+
+        program: Program = parser.parse_program()
+
+        expression_statement = cast(ExpressionStatement, program.statements[0])
+        string_literal = cast(StringLiteral, expression_statement.expression)
+
+        self.assertIsInstance(string_literal, StringLiteral)
+        self.assertEquals(string_literal.value, 'hello world!')
